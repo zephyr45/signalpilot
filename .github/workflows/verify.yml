@@ -1,0 +1,39 @@
+name: Verify SignalPilot
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - run: bash mvnw -B verify
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Start application and verify independent MCP client
+        shell: bash
+        run: |
+          java -jar target/signalpilot-1.0.0.jar > target/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          for attempt in $(seq 1 45); do
+            if curl -fsS http://127.0.0.1:8091/actuator/health; then break; fi
+            sleep 1
+          done
+          npm run test:mcp
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification-evidence
+          path: |
+            target/surefire-reports/
+            artifacts/mcp-verification.json
+            target/server.log

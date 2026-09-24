@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-09-24T16:30:07.325Z",
+  "steps": [
+    "New incident dialog opens",
+    "Checkout scenario presents four evidence records",
+    "Evidence analysis produces a reviewable action",
+    "Evidence reference opens the Evidence tab",
+    "Approval requires a review dialog",
+    "Human approval is persisted",
+    "A single healthy sample does not permit resolution",
+    "An unhealthy sample resets the recovery gate",
+    "Two consecutive healthy samples unlock resolution",
+    "Default brief transparently identifies the non-LLM provider",
+    "Incident resolves through the UI",
+    "Customer update reflects verified recovery",
+    "Postmortem includes verified recovery and timeline",
+    "Mobile layout has no horizontal overflow",
+    "Provider outage has a different mitigation from the deployment scenario",
+    "Insufficient evidence leads to abstention",
+    "User evidence is rendered as text, not HTML",
+    "Browser diagnostic initializes MCP, discovers tools and executes a real tool"
+  ],
+  "browserErrors": "",
+  "passed": true
+}

@@ -1,0 +1,13 @@
+target/
+data/
+.env
+.env.*
+!.env.example
+node_modules/
+*.log
+artifacts/*.webm
+artifacts/*.wav
+artifacts/*.mp4
+artifacts/narration-list.txt
+.devpost-hackathon-state.json
+.DS_Store

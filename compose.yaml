@@ -1,0 +1,13 @@
+services:
+  signalpilot:
+    build: .
+    ports:
+      - "127.0.0.1:8091:8091"
+    environment:
+      SIGNALPILOT_TOKEN: ${SIGNALPILOT_TOKEN:?Set a random access token before starting the container}
+      SIGNALPILOT_ORIGIN: http://127.0.0.1:8091
+      AI_PROVIDER: local
+    volumes:
+      - signalpilot-data:/app/data
+volumes:
+  signalpilot-data:

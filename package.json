@@ -1,0 +1,13 @@
+{
+  "name": "signalpilot-verification",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test:mcp": "node scripts/mcp-smoke.mjs"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "agent-browser": "0.27.0"
+  }
+}

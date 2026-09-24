@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS incidents (
+  id VARCHAR(40) PRIMARY KEY,
+  payload CLOB NOT NULL,
+  updated_at VARCHAR(40) NOT NULL
+);

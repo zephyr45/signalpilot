@@ -1,0 +1,29 @@
+{
+  "checkedAt": "2026-09-24T16:30:20.913Z",
+  "transport": "Streamable HTTP",
+  "steps": [
+    "SDK initialize and session established",
+    "Nine tools discovered; operational approval is not exposed",
+    "Real tools/call created and analyzed an incident with cited evidence",
+    "Customer update returned without internal diagnostic detail",
+    "Unresolved postmortem stays explicitly unverified",
+    "Missing incident returned an MCP tool error"
+  ],
+  "server": {
+    "name": "signalpilot",
+    "version": "1.0.0"
+  },
+  "tools": [
+    "get_incident",
+    "generate_postmortem",
+    "assign_commander",
+    "list_incidents",
+    "ingest_evidence",
+    "record_decision",
+    "draft_status_update",
+    "analyze_incident",
+    "create_incident"
+  ],
+  "incidentId": "681e2706-187a-4d9c-a305-ae956af1e00e",
+  "passed": true
+}
