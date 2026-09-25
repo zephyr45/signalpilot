@@ -65,11 +65,11 @@ Not hosted. The rules do not require a hosted website; use the reproducible loca
 
 ## Public Repository Link
 
-Pending publication verification. Intended repository: `https://github.com/zephyr45/signalpilot`.
+[https://github.com/zephyr45/signalpilot](https://github.com/zephyr45/signalpilot) — verified public, with a GitHub-recognized MIT license and complete source/run instructions.
 
 ## Demo Video
 
-Prepared file: `artifacts/signalpilot-demo.mp4` — **2 minutes 33 seconds**, 1440×1000, H.264 video with English synthesized narration. Shows the running application, evidence, approval, simulated mitigation, failed and successful recovery checks, communications, postmortem, and MCP connection surface.
+Prepared file: `artifacts/signalpilot-demo.mp4` — **approximately 2 minutes 36 seconds** (155.81 seconds), 1440×1000, H.264 video with English synthesized narration. Shows the running application, evidence, approval, simulated mitigation, failed and successful recovery checks, communications, postmortem, and live MCP initialization, discovery and tool execution.
 
 **Remaining required external action:** upload this file to YouTube or Vimeo with public visibility and put the resulting URL here. A GitHub video asset does not replace the required YouTube/Vimeo link.
 
@@ -83,7 +83,7 @@ Prepared file: `artifacts/signalpilot-demo.mp4` — **2 minutes 33 seconds**, 14
 
 ## Submission Readiness Notes
 
-The application and local demo assets are complete. See `docs/verification.md` for exact tests and limits. Source publication and the mandatory public YouTube/Vimeo URL must be verified before the entry is ready to send. Required personal eligibility attestations must come from the participant. This draft neither changes nor replaces any existing Devpost entry on the account.
+The application, public source and local demo assets are complete. See `docs/verification.md` for exact tests and limits. The mandatory public YouTube/Vimeo URL is still needed before the entry is ready to send. Required personal eligibility attestations must come from the participant. This draft neither changes nor replaces any existing Devpost entry on the account.
 
 ## Known Limitations
 
@@ -91,7 +91,7 @@ All operational telemetry and remediation are simulated. Hypothesis strength is 
 
 ## TODO Official Form Fields
 
-These IDs and labels were read from the live Devpost form on 2026-09-23. Re-fetch before final submission in case the form changes.
+These IDs and labels were rechecked against the live Devpost form on 2026-09-24. Re-fetch before final submission in case the form changes.
 
 | Field ID | Official field | Draft answer |
 | --- | --- | --- |
@@ -100,7 +100,7 @@ These IDs and labels were read from the live Devpost form on 2026-09-23. Re-fetc
 | 28287 | Submitter Country of Residence | Participant must provide; do not infer from timezone |
 | 28288 | If you or any team members reside in Canada, please indicate the province below. | Participant to confirm; N/A if not in Canada |
 | 28289 | Which Primary Track(s) are you submitting your project into? | Alexa+ |
-| 28290 | Provide a URL to your code repository for judging and testing on GitHub. | Pending publication verification |
+| 28290 | Provide a URL to your code repository for judging and testing on GitHub. | https://github.com/zephyr45/signalpilot |
 | 28291 | Is your project new or existing prior to August 31, 2026? | New |
 | 28292 | If you are submitting an existing project, please explain what and how you updated it during the submission period. | Not applicable; fresh project built September 23–24 |
 | 28293 | Are you submitting for the AWS Builder Mini Challenge? | No — live AWS usage not verified |
@@ -108,7 +108,7 @@ These IDs and labels were read from the live Devpost form on 2026-09-23. Re-fetc
 | 28295 | Are you submitting for the Open Source Mini Challenge? | No — no separate additional contribution is claimed |
 | 28296–28299 | Open Source Mini Challenge fields | Omit when not entering |
 | 28300 | [Optional] Feature Requests | See `docs/product-feedback.md` |
-| 28301 | [Optional] Friction Log | Public repository URL to `docs/product-feedback.md` once published |
+| 28301 | [Optional] Friction Log | https://github.com/zephyr45/signalpilot/blob/main/docs/product-feedback.md |
 | 28302 | [Optional] Project Testing Link | Omit; local instructions provided |
 | 28303–28307 | Feedback Questions 1–5 | Ready-to-paste answers in `docs/product-feedback.md` |
 | 28308 | Age | Participant must explicitly attest |

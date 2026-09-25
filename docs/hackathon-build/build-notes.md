@@ -19,6 +19,8 @@ The participant selected SignalPilot after brainstorming and asked for autonomou
 - Verified UI flow and mobile layout; handled untrusted evidence as text.
 - Repackaged after a Windows file-lock failure and confirmed persistence on restart.
 - Adapted browser CLI orchestration to avoid inherited daemon output pipes.
-- Recorded and inspected the 153-second demonstration with actual UI actions and English synthesized narration.
+- Recorded and inspected the 155.81-second demonstration with actual UI actions and English synthesized narration. Held the final frame to preserve the complete spoken conclusion.
+- Final requirement check added a live browser MCP diagnostic so the video shows actual initialization, tool discovery and invocation, not just connection instructions.
+- Published MIT-licensed source and verified Java tests plus independent MCP calls on GitHub's Ubuntu runner.
 
 No unobserved AWS performance, production result, or contest achievement was invented. Remaining account-dependent requirements are tracked in the submission draft.

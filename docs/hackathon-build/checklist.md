@@ -12,5 +12,5 @@ Working mode: user explicitly authorized autonomous decisions, implementation an
 - [x] Verify core lifecycle, negative paths, concurrency and independent MCP client.
 - [x] Complete desktop/mobile browser regression, restart persistence and token tests.
 - [x] Prepare screenshots, narrated demonstration and submission draft.
-- [ ] Package source, executable, run instructions and reviewer evidence.
-- [ ] Verify remaining external deliverables and report only actual blockers.
+- [x] Package source, executable, run instructions and reviewer evidence.
+- [x] Verify remaining external deliverables: public YouTube/Vimeo video URL and participant eligibility declarations remain. No Devpost entry was sent or replaced.

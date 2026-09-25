@@ -16,7 +16,7 @@ Checked locally September 23–24, 2026 using JDK 21.0.11 on Windows 11.
 - **18 browser assertions:** full UI lifecycle, evidence navigation, approval, healthy/failed recovery, local-provider label, communications, postmortem, 390px mobile layout without horizontal overflow, provider/unknown scenarios, HTML-injection text rendering, and a live browser MCP handshake/discovery/tool call. No browser errors reported. See `artifacts/browser-verification.json`.
 - H2 incidents survived stopping and restarting the application.
 - Executable JAR packaged successfully after stopping the Windows process that locked the previous build.
-- Demo metadata checked: 153 seconds, H.264/AAC, 1440×1000; visual contact sheet inspected, English speech track present and non-silent.
+- Final demo metadata checked: 155.81 seconds, H.264/AAC, 1440×1000; visual contact sheet and live MCP scene inspected, full English speech track preserved and non-silent. Final packaging completed September 25.
 
 ## Reproduce
 
@@ -41,4 +41,6 @@ The browser regression creates clearly simulated incidents. Do not run it agains
 - Production security, multi-tenancy, durability under hardware failure, load scalability or incident time reduction.
 - Public video publication: a YouTube/Vimeo URL is still required.
 
-GitHub CI status and source publication are recorded after the remote run completes.
+## Public verification
+
+The [public repository](https://github.com/zephyr45/signalpilot) has a GitHub-recognized MIT license. [GitHub Actions run 36027965434](https://github.com/zephyr45/signalpilot/actions/runs/36027965434) passed on Ubuntu: wrapper build, all 11 Java tests, executable startup and the independent SDK MCP test. Its verification artifact contains Surefire reports, server log and MCP results. Browser regression was run locally; it is not claimed as part of that CI job.

@@ -8,7 +8,7 @@ Java 21 and Spring Boot 4.0.8 host the incident API and static dashboard. Spring
 
 ## Feedback Question 2: For each tool, API, or SDK used in your project, what worked well?
 
-Spring AI let the project use an official MCP transport rather than implementing JSON-RPC by hand. An independent SDK successfully negotiated a session and invoked the real Java tools. Spring transactions and H2 row locks supported the concurrent-update checks. The Maven wrapper makes the Java toolchain reproducible. Browser automation verified the entire incident lifecycle and mobile overflow, while FFmpeg and speech synthesis produced a 153-second demo without external media assets. The Devpost connector exposed exact form field IDs, making the draft specific to this event. AWS SDK types compiled cleanly; runtime feedback on Bedrock is not available without a live invocation.
+Spring AI let the project use an official MCP transport rather than implementing JSON-RPC by hand. An independent SDK successfully negotiated a session and invoked the real Java tools. Spring transactions and H2 row locks supported the concurrent-update checks. The Maven wrapper makes the Java toolchain reproducible. Browser automation verified the entire incident lifecycle and mobile overflow, while FFmpeg and speech synthesis produced a 156-second demo without external media assets. The Devpost connector exposed exact form field IDs, making the draft specific to this event. AWS SDK types compiled cleanly; runtime feedback on Bedrock is not available without a live invocation.
 
 ## Feedback Question 3: For each tool, API, or SDK used in your project, what needs work?
 

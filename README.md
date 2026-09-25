@@ -2,11 +2,15 @@
 
 **Evidence → decision → verified recovery.**
 
+[![Verify SignalPilot](https://github.com/zephyr45/signalpilot/actions/workflows/verify.yml/badge.svg)](https://github.com/zephyr45/signalpilot/actions/workflows/verify.yml)
+
 A Java/Spring Boot incident command workbench and self-hosted MCP server for the Amazon Developer Hackathon's Alexa+ track. Investigate an outage, inspect the supporting evidence, approve a simulated response, verify recovery and export the postmortem.
 
 ![SignalPilot incident dashboard](artifacts/02-investigation.png)
 
 ## Run in two commands
+
+Prefer a prebuilt executable? The [v1.0.0 release](https://github.com/zephyr45/signalpilot/releases/tag/v1.0.0) contains the JAR, narrated demo and source archive. Run the downloaded JAR with `java -jar signalpilot-1.0.0.jar` (JDK 21 required).
 
 Requires **JDK 21**. Maven is downloaded by the included wrapper; Node is only needed for optional independent MCP verification.
 

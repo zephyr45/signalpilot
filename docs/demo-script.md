@@ -1,4 +1,4 @@
-# SignalPilot demo — 2:33
+# SignalPilot demo — 2:36
 
 Prepared recording: `artifacts/signalpilot-demo.mp4` (H.264/AAC, 1440×1000). English narration uses the installed Windows synthesis voice. All visible telemetry and operational outcomes are labeled simulations.
 

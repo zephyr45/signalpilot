@@ -154,7 +154,7 @@ try {
       "-map",
       "1:a:0",
       "-vf",
-      "pad=ceil(iw/2)*2:ceil(ih/2)*2",
+      "pad=ceil(iw/2)*2:ceil(ih/2)*2,tpad=stop_mode=clone:stop_duration=5",
       "-c:v",
       "libx264",
       "-preset",

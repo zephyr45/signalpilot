@@ -20,7 +20,7 @@ The project includes nine MCP tools, transactional persistence, concurrency prot
 
 I used Codex extensively for implementation and verification. The default demo is deterministic and clearly labeled; AI clients connect through MCP. An optional Bedrock briefing adapter is included, with live cloud verification still pending.
 
-Repository: [insert verified repository URL]
+Repository: https://github.com/zephyr45/signalpilot
 Demo: [insert public YouTube/Vimeo URL]
 
 #Java #SpringBoot #MCP #BackendDevelopment #AmazonDeveloper #Hackathon
