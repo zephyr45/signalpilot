@@ -20,7 +20,7 @@ Open http://127.0.0.1:8091. No account or model key is needed. The app stores lo
 - Nine real Streamable HTTP MCP tools; verified protocol 2025-11-25. Dashboard includes a live handshake/discovery/tool-call diagnostic.
 - Transactional persistence, stale-write protection, request deduplication and approval invalidation.
 - 11 passing Java integration tests and 18 passing browser assertions, plus an independent TypeScript MCP client check.
-- Submission draft, product feedback/friction log and resume/LinkedIn material.
+- Submission draft, product feedback/friction log and verification evidence.
 
 ## Honest limits
 

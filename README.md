@@ -100,12 +100,11 @@ For a remote host set `SIGNALPILOT_BIND=0.0.0.0`, a token and `SIGNALPILOT_ORIGI
 ## Verification and submission materials
 
 - [Verification evidence](docs/verification.md)
-- [Architecture and scope](docs/hackathon-build/spec.md)
+- [Architecture](docs/architecture.md)
 - [Submission draft](devpost-submission.md)
 - [Demo script and recording](docs/demo-script.md)
-- [Resume and LinkedIn copy](docs/career-kit.md)
 - [Product feedback and friction log](docs/product-feedback.md)
 
 All sample telemetry, fixes and recovery checks are simulated. The project is a functional hackathon prototype, not a production incident-management service. No measured customer outcomes or contest award are claimed.
 
-MIT licensed. Built with Codex through the Devpost guided workflow, with autonomous implementation requested by the participant.
+MIT licensed. Built with assistance from Codex.

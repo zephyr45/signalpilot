@@ -26,7 +26,7 @@ The dashboard's local evidence evaluator, basic command router, status drafts an
 
 ## How We Used Codex
 
-Codex helped compare project directions, select the backend-oriented incident-response concept, implement the Java service and interface, write integration tests, debug a Spring bean-name collision, verify the MCP server through a separate SDK client, test the browser lifecycle, capture screenshots, and generate an English narrated demo. The participant chose the Java/Spring Boot focus, career objective, and autonomous working mode. Existing unrelated workspace projects were excluded.
+Codex helped compare project directions, implement the Java service and interface, write integration tests, debug a Spring bean-name collision, verify the MCP server through a separate SDK client, test the browser lifecycle, capture screenshots, and generate an English narrated demo.
 
 ## Key Features
 

@@ -1,4 +1,4 @@
-# Scope, product requirements and technical decisions
+# Architecture
 
 SignalPilot is an incident-command workbench for a small software team. A responder needs a coherent view of observations, uncertain hypotheses, decisions and recovery. The demo models checkout failure after a deployment and a contrasting upstream-provider outage.
 
