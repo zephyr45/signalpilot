@@ -5,9 +5,11 @@ COPY pom.xml .
 RUN mvn -B dependency:go-offline
 COPY src src
 RUN mvn -B -Dbuild.commit="${GIT_COMMIT}" verify
-FROM eclipse-temurin:21-jre@sha256:d7051a45dd955e4d5d1db4d3f4269fe13d1c6dff8cc6b7ef89fc8577b96c1982
+FROM eclipse-temurin:21-jre@sha256:227118764cccd3c3294617061aaa93a08309c63a395eefa83e6b35032992ea99
 WORKDIR /app
-RUN mkdir /app/data && chown -R 10001:10001 /app
+RUN rm -f /usr/bin/pebble \
+    && mkdir /app/data \
+    && chown -R 10001:10001 /app
 COPY --from=build --chown=10001:10001 /app/target/signalpilot-1.0.0.jar app.jar
 USER 10001
 ENV SIGNALPILOT_BIND=0.0.0.0
