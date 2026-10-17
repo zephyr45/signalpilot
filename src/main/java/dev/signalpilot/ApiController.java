@@ -1,6 +1,9 @@
 package dev.signalpilot;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.*;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -10,10 +13,16 @@ import org.springframework.web.server.ResponseStatusException;
 public class ApiController {
   private final IncidentService service;
   private final BriefService brief;
+  private final String version;
 
-  public ApiController(IncidentService service, BriefService brief) {
+  public ApiController(
+      IncidentService service,
+      BriefService brief,
+      ObjectProvider<BuildProperties> buildProperties) {
     this.service = service;
     this.brief = brief;
+    BuildProperties build = buildProperties.getIfAvailable();
+    this.version = build == null ? "development" : build.getVersion();
   }
 
   public record NewIncident(String scenario, String title, String service) {}
@@ -31,7 +40,7 @@ public class ApiController {
         "name",
         "SignalPilot",
         "version",
-        "1.0.0",
+        version,
         "aiProvider",
         brief.provider(),
         "mode",
@@ -41,14 +50,16 @@ public class ApiController {
   }
 
   @GetMapping("/incidents")
-  List<Incident> list() {
-    return service.list();
+  List<Incident> list(
+      @RequestParam(defaultValue = "50") int limit,
+      @RequestParam(defaultValue = "0") int offset) {
+    return service.list(limit, offset);
   }
 
   @PostMapping("/incidents")
   @ResponseStatus(HttpStatus.CREATED)
-  Incident create(@RequestBody NewIncident n) {
-    return service.create(n.scenario(), n.title(), n.service());
+  Incident create(@RequestBody NewIncident n, HttpServletRequest request) {
+    return service.create(n.scenario(), n.title(), n.service(), principal(request));
   }
 
   @GetMapping("/incidents/{id}")
@@ -57,16 +68,25 @@ public class ApiController {
   }
 
   @PostMapping("/incidents/{id}/commands")
-  Incident command(@PathVariable String id, @RequestBody Command c) {
+  Incident command(
+      @PathVariable String id, @RequestBody Command c, HttpServletRequest request) {
     if (c.operation() == null)
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Operation required");
     return service.command(
-        id, c.operation(), c.value(), c.revision(), c.requestId(), "Dashboard operator");
+        id, c.operation(), c.value(), c.revision(), c.requestId(), principal(request));
   }
 
   @PostMapping("/incidents/{id}/evidence")
-  Incident evidence(@PathVariable String id, @RequestBody EvidenceInput e) {
-    return service.evidence(id, e.kind(), e.source(), e.summary(), e.revision(), e.requestId());
+  Incident evidence(
+      @PathVariable String id, @RequestBody EvidenceInput e, HttpServletRequest request) {
+    return service.evidence(
+        id,
+        e.kind(),
+        e.source(),
+        e.summary(),
+        e.revision(),
+        e.requestId(),
+        principal(request));
   }
 
   @GetMapping("/incidents/{id}/update")
@@ -90,7 +110,8 @@ public class ApiController {
   }
 
   @PostMapping("/incidents/{id}/chat")
-  Map<String, Object> chat(@PathVariable String id, @RequestBody Chat c) {
+  Map<String, Object> chat(
+      @PathVariable String id, @RequestBody Chat c, HttpServletRequest request) {
     String message = IncidentService.clean(c.message(), 1000).toLowerCase(Locale.ROOT);
     if (message.matches(".*\\b(approve|execute|rollback|roll back|resolve)\\b.*"))
       return Map.of(
@@ -100,7 +121,9 @@ public class ApiController {
           "incident",
           service.get(id));
     if (message.contains("analy") || message.contains("diagnos") || message.contains("cause")) {
-      var i = service.command(id, "analyze", "", c.revision(), c.requestId(), "Command console");
+      var i =
+          service.command(
+              id, "analyze", "", c.revision(), c.requestId(), principal(request));
       return Map.of(
           "reply",
           i.hypotheses.getFirst().title() + ". " + i.hypotheses.getFirst().explanation(),
@@ -116,5 +139,10 @@ public class ApiController {
             + " an LLM; connect an MCP agent for natural-language reasoning.",
         "incident",
         service.get(id));
+  }
+
+  private static String principal(HttpServletRequest request) {
+    Object principal = request.getAttribute(AccessFilter.PRINCIPAL_ATTRIBUTE);
+    return principal == null ? "local-operator" : principal.toString();
   }
 }

@@ -25,7 +25,7 @@ public class IncidentTools {
           "Create an incident. Scenario: deployment, provider, unknown, or custom. Seeded scenarios"
               + " contain explicitly simulated telemetry.")
   public Incident create_incident(String scenario, String title, String serviceName) {
-    return service.create(scenario, title, serviceName);
+    return service.create(scenario, title, serviceName, "mcp-client");
   }
 
   @Tool(
@@ -56,7 +56,8 @@ public class IncidentTools {
       String summary,
       int revision,
       String requestId) {
-    return service.evidence(incidentId, kind, source, summary, revision, requestId);
+    return service.evidence(
+        incidentId, kind, source, summary, revision, requestId, "mcp-client");
   }
 
   @Tool(description = "Record a decision in the incident timeline. Does not authorize remediation.")

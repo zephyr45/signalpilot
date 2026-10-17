@@ -22,40 +22,42 @@ The project explores how AI agents can help a small on-call team without erasing
 
 The self-hosted MCP server provides structured observations and workflow tools to a connected AI client. The client brings its model. Server tools return evidence IDs, alternate hypotheses and explicit uncertainty, giving the model durable context instead of an unstructured log dump.
 
-The dashboard's local evidence evaluator, basic command router, status drafts and default briefing are deterministic; they are labeled accordingly and are not presented as model inference. An optional Amazon Bedrock Converse adapter generates an evidence-grounded commander brief with a provider label and bounded timeout. That cloud path has not been verified with live AWS credentials and is not claimed as an AWS mini-challenge achievement.
+The dashboard's local evidence evaluator, basic command router, status drafts and default briefing are deterministic; they are labeled accordingly and are not presented as model inference. An optional Amazon Bedrock Converse adapter requests a structured, evidence-grounded commander brief with explicit citations, uncertainty and a next step. The server rejects unknown evidence references, malformed output and prompt/secret-leak patterns before persisting a brief. That cloud path has not been verified with live AWS credentials and is not claimed as an AWS mini-challenge achievement.
 
 ## How We Used Codex
 
-Codex helped compare project directions, implement the Java service and interface, write integration tests, debug a Spring bean-name collision, verify the MCP server through a separate SDK client, test the browser lifecycle, capture screenshots, and generate an English narrated demo.
+Codex helped compare project directions, implement the Java service and interface, write integration tests, debug a Spring bean-name collision, verify the MCP server through a separate SDK client, test the browser lifecycle, capture screenshots, and generate an English narrated demo. A later production-readiness pass added scoped operator/MCP credentials, bounded request handling, rate and concurrency controls, replay-safe idempotency, Flyway migrations, structured model-output validation, dependency/SBOM checks and accessibility regression coverage.
 
 ## Key Features
 
 - Three reproducible incident scenarios plus custom evidence intake.
 - Evidence-linked hypotheses, alternative explanations and abstention when evidence is insufficient.
 - Human approval for simulated mitigation; new evidence invalidates old proposals and approvals.
-- Revision preconditions, database row locks and request deduplication.
+- Revision preconditions, database row locks and replay-safe idempotency that rejects reuse of a key for a different operation or payload.
 - Recovery gate requiring two consecutive observations below 1% errors and 500 ms p95.
 - Customer, engineering and executive update drafts; nothing is sent automatically.
 - Persisted incident timeline and downloadable Markdown postmortem.
-- Responsive dashboard, optional browser dictation, token protection and origin checks.
+- Responsive, keyboard-operable dashboard; optional browser dictation; separate operator and MCP credentials; origin, body-size, rate and concurrency controls.
 - Nine real MCP tools using the official Spring AI transport implementation.
 
 ## Architecture
 
-Java 21 → Spring Boot 4.0.8 → Spring AI 2.0.1 MCP server → shared incident service → transactional JDBC/H2 persistence. A vanilla JavaScript dashboard uses the same domain logic through REST. Optional AWS SDK Bedrock Converse produces a textual briefing and cannot mutate incident actions.
+Java 21 → Spring Boot 4.0.8 → Spring AI 2.0.1 MCP server → shared incident service → transactional JDBC persistence. Flyway owns the schema; H2 supports the credential-free local demo and the PostgreSQL driver/migrations support a production database. Evidence, timeline events, recovery metrics and idempotency records are stored in bounded, indexed tables instead of growing inside one aggregate payload. A vanilla JavaScript dashboard uses the same domain logic through REST. Optional AWS SDK Bedrock Converse produces a validated textual briefing and cannot mutate incident actions.
 
 The MCP integration negotiates protocol **2025-11-25** and uses **Streamable HTTP**. There is no claim of a production Alexa+ account link, certified Alexa skill, event-sourced backend or tamper-proof audit store.
 
 ## Testing Instructions
 
 1. Clone the repository; install JDK 21.
-2. Run `./mvnw verify` (Windows: `.\mvnw.cmd verify`).
+2. Run `./mvnw verify` (Windows: `.\mvnw.cmd verify`). The current local hardening build has 18 passing Java tests.
 3. Run `java -jar target/signalpilot-1.0.0.jar` and open `http://127.0.0.1:8091`.
 4. Launch the checkout scenario, analyze, follow an evidence link, review and approve the proposal, then run its simulation.
 5. Pass one recovery check, simulate a failed check, then pass two checks. Confirm resolution appears only after the consecutive passes.
 6. Resolve the incident, draft a customer update and export the postmortem.
 7. Try the provider-outage scenario and the insufficient-evidence scenario to see different decisions.
-8. Optionally run `npm ci && npm run test:mcp` against the running app. It uses an independent MCP SDK client to execute actual tools. `node scripts/browser-check.mjs` reruns the browser regression after installing the browser with `npx agent-browser install`.
+8. Run `npm ci && npm run test:mcp` against the running app. It uses an independent MCP SDK client to execute actual tools.
+9. Run `npm run test:a11y` against the running app to check Axe serious/critical findings, keyboard tab behavior, mobile overflow, interactive target sizes and browser-console errors.
+10. `node scripts/browser-check.mjs` reruns the full browser regression after installing the browser with `npx agent-browser install`.
 
 No paid service or credentials are needed for the core workflow. Local data persists under `data/`. Bedrock and browser microphone access are optional.
 
@@ -71,6 +73,15 @@ Not hosted. The rules do not require a hosted website; use the reproducible loca
 
 Prepared file: `artifacts/signalpilot-demo.mp4` — **approximately 2 minutes 36 seconds** (155.81 seconds), 1440×1000, H.264 video with English synthesized narration. Shows the running application, evidence, approval, simulated mitigation, failed and successful recovery checks, communications, postmortem, and live MCP initialization, discovery and tool execution.
 
+Demo outline:
+
+1. Introduce the scattered-evidence and operator-control problem.
+2. Launch a checkout incident and inspect telemetry plus source-linked evidence.
+3. Analyze alternatives, review the proposed action and approve the simulation.
+4. Demonstrate a failed recovery check followed by two consecutive healthy observations.
+5. Generate a customer-safe update and export the postmortem.
+6. Show a live MCP handshake, tool discovery and tool invocation from an independent client.
+
 **Remaining required external action:** upload this file to YouTube or Vimeo with public visibility and put the resulting URL here. A GitHub video asset does not replace the required YouTube/Vimeo link.
 
 ## Screenshot Shot List
@@ -83,15 +94,15 @@ Prepared file: `artifacts/signalpilot-demo.mp4` — **approximately 2 minutes 36
 
 ## Submission Readiness Notes
 
-The application, public source and local demo assets are complete. See `docs/verification.md` for exact tests and limits. The mandatory public YouTube/Vimeo URL is still needed before the entry is ready to send. Required personal eligibility attestations must come from the participant. This draft neither changes nor replaces any existing Devpost entry on the account.
+The product story, repository URL, screenshots, local video and testing instructions are present. The production-readiness update passed 18 Java tests, the independent MCP flow, all 18 browser assertions, an Axe scan with zero violations, keyboard/mobile checks and an npm audit with zero vulnerabilities. The repository update still needs its public GitHub Actions run to pass. A public YouTube/Vimeo URL and the participant's personal eligibility answers are still needed. Devpost's live account/form service returned an internal error during this preparation pass, so registration, the submission window and the current official fields must be rechecked before the entry is sent. This draft neither changes nor replaces any existing Devpost entry on the account.
 
 ## Known Limitations
 
-All operational telemetry and remediation are simulated. Hypothesis strength is rule-based and not a calibrated probability. Evidence sources are supplied by callers rather than independently authenticated. The cloud briefing and native microphone path are not verified with live accounts/devices. Single-workspace token authentication is not a multi-user authorization system. Docker configuration is included but the local Docker engine was unavailable. No production availability or scale claim is made.
+All operational telemetry and remediation are simulated. Hypothesis strength is rule-based and not a calibrated probability. Evidence sources are supplied by callers rather than independently authenticated. The cloud briefing and native microphone path are not verified with live accounts/devices. Scoped static credentials are not multi-user identity, OAuth or tenant isolation; rate limiting is process-local. PostgreSQL and the hardened Docker configuration are included but have not been exercised in the local environment because the Docker engine was unavailable. No production availability or scale claim is made.
 
 ## TODO Official Form Fields
 
-These IDs and labels were rechecked against the live Devpost form on 2026-09-24. Re-fetch before final submission in case the form changes.
+The following is a historical form snapshot last checked on 2026-09-24, not a current official form response. Re-fetch it from Devpost before final submission; do not rely on these IDs if the live form differs.
 
 | Field ID | Official field | Draft answer |
 | --- | --- | --- |

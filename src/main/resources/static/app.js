@@ -21,7 +21,7 @@ const clock = (t) =>
     second: "2-digit",
   });
 async function api(path, method = "GET", body) {
-  const token = sessionStorage.getItem("signalpilot-token");
+  const token = sessionStorage.getItem("signalpilot-operator-token");
   const r = await fetch("/api" + path, {
     method,
     headers: {
@@ -265,18 +265,32 @@ function newIncident() {
     },
   );
 }
-function switchTab(name) {
+function switchTab(name, moveFocus = false) {
   activeTab = name;
-  document
-    .querySelectorAll("[data-tab]")
-    .forEach((b) =>
-      b.setAttribute("aria-selected", String(b.dataset.tab === name)),
-    );
+  document.querySelectorAll("[data-tab]").forEach((button) => {
+    const selected = button.dataset.tab === name;
+    button.setAttribute("aria-selected", String(selected));
+    button.tabIndex = selected ? 0 : -1;
+    if (selected && moveFocus) button.focus();
+  });
   document
     .querySelectorAll(".tab-content")
     .forEach((t) => (t.hidden = t.id !== "tab-" + name));
   if (name === "postmortem") task(loadPostmortem);
 }
+document.querySelector("[role='tablist']").addEventListener("keydown", (event) => {
+  if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+  const tabs = [...document.querySelectorAll("[role='tab']")];
+  const current = tabs.indexOf(document.activeElement);
+  if (current < 0) return;
+  event.preventDefault();
+  let next = current;
+  if (event.key === "ArrowRight") next = (current + 1) % tabs.length;
+  if (event.key === "ArrowLeft") next = (current - 1 + tabs.length) % tabs.length;
+  if (event.key === "Home") next = 0;
+  if (event.key === "End") next = tabs.length - 1;
+  switchTab(tabs[next].dataset.tab, true);
+});
 async function loadPostmortem() {
   $("#postmortem-text").textContent = await api(
     `/incidents/${incident.id}/postmortem`,
@@ -441,10 +455,14 @@ $("#voice-btn").onclick = () => {
 $("#access-settings").onclick = () =>
   modal(
     "Workspace access",
-    '<p>Local mode needs no token. For a remote server, enter the shared token configured by its operator. It is stored only for this browser session.</p><label for="token">Access token</label><input id="token" name="token" type="password" autocomplete="off">',
-    "Save token",
+    '<p>Local mode needs no token. Remote deployments use separate operator and MCP credentials. Both are stored only for this browser session.</p><label for="operator-token">Operator token</label><input id="operator-token" name="operator-token" type="password" autocomplete="off"><label for="mcp-token">MCP client token</label><input id="mcp-token" name="mcp-token" type="password" autocomplete="off">',
+    "Save tokens",
     async (f) => {
-      sessionStorage.setItem("signalpilot-token", f.get("token"));
+      sessionStorage.setItem(
+        "signalpilot-operator-token",
+        f.get("operator-token"),
+      );
+      sessionStorage.setItem("signalpilot-mcp-token", f.get("mcp-token"));
       await boot();
     },
   );
@@ -460,7 +478,7 @@ $("#open-mcp").onclick = () => {
     "Connect your AI agent",
     "<p>SignalPilot exposes nine tools through the official Spring AI MCP server. Connect a Streamable HTTP client to:</p><code>" +
       esc(location.origin) +
-      '/mcp</code><p>For a remote server, send <code>Authorization: Bearer YOUR_TOKEN</code>. Use TLS. The client supplies its own AI model; this diagnostic makes real protocol calls without an LLM.</p><button type="button" id="test-mcp" class="primary">Run live MCP check</button><pre id="mcp-result" aria-live="polite"></pre><p>Approval and execution are absent from the MCP tool surface. This project supplies the self-hosted MCP path, not a production Alexa+ account connection.</p>',
+      '/mcp</code><p>For a remote server, send the dedicated MCP credential as <code>Authorization: Bearer MCP_TOKEN</code>. The operator credential is not accepted. Use TLS. The client supplies its own AI model; this diagnostic makes real protocol calls without an LLM.</p><button type="button" id="test-mcp" class="primary">Run live MCP check</button><pre id="mcp-result" aria-live="polite"></pre><p>Approval and execution are absent from the MCP tool surface. This project supplies the self-hosted MCP path, not a production Alexa+ account connection.</p>',
     null,
     null,
   );
@@ -472,7 +490,7 @@ async function checkMcp() {
   const output = $("#mcp-result");
   const button = $("#test-mcp");
   const log = (line) => (output.textContent += line + "\n");
-  const token = sessionStorage.getItem("signalpilot-token");
+  const token = sessionStorage.getItem("signalpilot-mcp-token");
   let session,
     sequence = 0,
     protocol = "2025-11-25";

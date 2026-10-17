@@ -6,11 +6,14 @@ spring:
     name: signalpilot
   datasource:
     url: ${DATABASE_URL:jdbc:h2:file:./data/signalpilot;DB_CLOSE_ON_EXIT=FALSE}
-    username: sa
+    username: ${DATABASE_USERNAME:sa}
     password: ${DATABASE_PASSWORD:}
   sql:
     init:
-      mode: always
+      mode: never
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
   ai:
     mcp:
       server:
@@ -27,13 +30,20 @@ spring:
           prompt: false
           completion: false
 management:
+  info:
+    git:
+      mode: full
   endpoints:
     web:
       exposure:
         include: health,info
 signalpilot:
-  token: ${SIGNALPILOT_TOKEN:}
-  origin: ${SIGNALPILOT_ORIGIN:http://127.0.0.1:8091}
+  operator-token: ${SIGNALPILOT_OPERATOR_TOKEN:}
+  mcp-token: ${SIGNALPILOT_MCP_TOKEN:}
+  origin: ${SIGNALPILOT_ORIGIN:}
+  rate-limit-per-minute: ${SIGNALPILOT_RATE_LIMIT_PER_MINUTE:120}
+  brief-rate-limit-per-minute: ${SIGNALPILOT_BRIEF_RATE_LIMIT_PER_MINUTE:6}
+  max-concurrent-requests: ${SIGNALPILOT_MAX_CONCURRENT_REQUESTS:8}
   ai-provider: ${AI_PROVIDER:local}
   aws-region: ${AWS_REGION:us-east-1}
   bedrock-model: ${BEDROCK_MODEL:amazon.nova-lite-v1:0}

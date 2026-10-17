@@ -3,6 +3,8 @@ package dev.signalpilot;
 import static dev.signalpilot.Incident.*;
 
 import java.time.Instant;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class IncidentService {
+  private static final int MAX_LIST_PAGE = 100;
+  private static final int MAX_EVIDENCE = 500;
+  private static final int MAX_TIMELINE_EVENTS = 500;
+  private static final int MAX_METRICS = 500;
   private final IncidentStore store;
 
   public IncidentService(IncidentStore store) {
@@ -18,7 +24,16 @@ public class IncidentService {
   }
 
   public List<Incident> list() {
-    return store.list();
+    return list(50, 0);
+  }
+
+  public List<Incident> list(int limit, int offset) {
+    if (limit < 1 || limit > MAX_LIST_PAGE)
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "Limit must be between 1 and " + MAX_LIST_PAGE);
+    if (offset < 0)
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Offset cannot be negative");
+    return store.list(limit, offset);
   }
 
   public Incident get(String id) {
@@ -41,15 +56,30 @@ public class IncidentService {
   }
 
   static void event(Incident i, String actor, String type, String detail) {
+    if (i.timeline.size() >= MAX_TIMELINE_EVENTS)
+      fail("Timeline retention limit reached; archive this incident and open a continuation");
     i.timeline.add(new Event(now(), actor, type, detail));
   }
 
+  static void metric(Incident i, Metric metric) {
+    if (i.metrics.size() >= MAX_METRICS)
+      fail("Metric retention limit reached; archive this incident and open a continuation");
+    i.metrics.add(metric);
+  }
+
   static void add(Incident i, String kind, String source, String summary) {
+    if (i.evidence.size() >= MAX_EVIDENCE)
+      fail("Evidence retention limit reached; archive this incident and open a continuation");
     i.evidence.add(new Evidence("E" + (i.evidence.size() + 1), kind, source, summary, now()));
   }
 
   @Transactional
   public Incident create(String scenario, String title, String service) {
+    return create(scenario, title, service, "Operator");
+  }
+
+  @Transactional
+  public Incident create(String scenario, String title, String service, String actor) {
     if (scenario == null
         || !List.of("deployment", "provider", "unknown", "custom").contains(scenario))
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown scenario");
@@ -61,13 +91,18 @@ public class IncidentService {
     i.createdAt = now();
     i.updatedAt = i.createdAt;
     event(
-        i, "Operator", "OPENED", "Incident opened. All remediation in this project is simulated.");
+        i,
+        clean(actor, 80),
+        "OPENED",
+        "Incident opened. All remediation in this project is simulated.");
     if (!scenario.equals("custom")) {
-      i.metrics.add(
+      metric(
+          i,
           new Metric(Instant.now().minusSeconds(120).toString(), 0.2, 180, "Simulator baseline"));
-      i.metrics.add(
+      metric(
+          i,
           new Metric(Instant.now().minusSeconds(60).toString(), 4.2, 1400, "Simulator alert"));
-      i.metrics.add(new Metric(now(), 12.8, 3200, "Simulator alert"));
+      metric(i, new Metric(now(), 12.8, 3200, "Simulator alert"));
       add(
           i,
           "ALERT",
@@ -131,7 +166,16 @@ public class IncidentService {
     var i = store.get(id, true);
     requestId = clean(requestId, 100);
     actor = clean(actor, 80);
-    if (i.requestIds.contains(requestId)) return i;
+    operation = clean(operation, 40).toLowerCase(Locale.ROOT);
+    String canonicalValue = value == null ? "" : value.strip();
+    String payloadHash = hash(operation, canonicalValue, revision, actor);
+    var replay = store.findRequest(id, requestId);
+    if (replay.isPresent()) {
+      if (!replay.get().operation().equals(operation)
+          || !replay.get().payloadHash().equals(payloadHash))
+        fail("Idempotency key was already used for a different request");
+      return store.replay(replay.get());
+    }
     if (i.revision != revision)
       fail("This incident changed. Refresh and review the latest evidence before acting.");
     if (i.status.equals("RESOLVED"))
@@ -151,6 +195,12 @@ public class IncidentService {
         event(
             i,
             actor,
+            "POLICY_DECISION",
+            "Allowed approve: authenticated operator scope; current revision and proposal state"
+                + " verified.");
+        event(
+            i,
+            actor,
             "APPROVED",
             a.title + " — approval applies to this proposal and current evidence only.");
       }
@@ -165,6 +215,11 @@ public class IncidentService {
         event(
             i,
             actor,
+            "POLICY_DECISION",
+            "Allowed execute: authenticated operator scope and matching human approval verified.");
+        event(
+            i,
+            actor,
             "SIMULATED",
             a.title + ". Simulator changed state; no production infrastructure was contacted.");
       }
@@ -176,7 +231,8 @@ public class IncidentService {
         if (!value.equals("healthy") && !value.equals("unhealthy"))
           fail("Sample must be healthy or unhealthy");
         boolean healthy = value.equals("healthy");
-        i.metrics.add(
+        metric(
+            i,
             new Metric(
                 now(), healthy ? 0.3 : 9.1, healthy ? 210 : 2500, "Simulator recovery check"));
         i.verifiedAt = "";
@@ -211,10 +267,10 @@ public class IncidentService {
       }
       default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown operation");
     }
-    i.requestIds.add(requestId);
     i.revision++;
     i.updatedAt = now();
     store.save(i);
+    store.recordRequest(i, requestId, operation, payloadHash);
     return i;
   }
 
@@ -298,12 +354,21 @@ public class IncidentService {
   @Transactional
   public Incident evidence(
       String id, String kind, String source, String summary, int revision, String requestId) {
+    return evidence(id, kind, source, summary, revision, requestId, "Operator");
+  }
+
+  @Transactional
+  public Incident evidence(
+      String id,
+      String kind,
+      String source,
+      String summary,
+      int revision,
+      String requestId,
+      String actor) {
     var i = store.get(id, true);
     requestId = clean(requestId, 100);
-    if (i.requestIds.contains(requestId)) return i;
-    if (i.revision != revision) fail("Refresh the incident before adding evidence");
-    if (!i.status.equals("INVESTIGATING")) fail("New evidence requires an investigating incident");
-    if (i.evidence.size() >= 100) fail("Evidence limit reached for this demo incident");
+    actor = clean(actor, 80);
     if (kind == null
         || !List.of(
                 "ALERT",
@@ -315,23 +380,54 @@ public class IncidentService {
                 "NOTE")
             .contains(kind))
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unsupported evidence kind");
-    add(i, kind, clean(source, 120), clean(summary, 3000));
+    source = clean(source, 120);
+    summary = clean(summary, 3000);
+    String operation = "evidence:" + kind;
+    String payloadHash = hash(operation, source, summary, revision, actor);
+    var replay = store.findRequest(id, requestId);
+    if (replay.isPresent()) {
+      if (!replay.get().operation().equals(operation)
+          || !replay.get().payloadHash().equals(payloadHash))
+        fail("Idempotency key was already used for a different request");
+      return store.replay(replay.get());
+    }
+    if (i.revision != revision) fail("Refresh the incident before adding evidence");
+    if (!i.status.equals("INVESTIGATING")) fail("New evidence requires an investigating incident");
+    if (i.evidence.size() >= 100) fail("Evidence limit reached for this demo incident");
+    add(i, kind, source, summary);
     i.actions.clear();
     i.hypotheses.clear();
     i.brief = "";
     i.briefProvider = "Not generated";
     event(
         i,
-        "Operator / MCP",
+        actor,
         "EVIDENCE",
         "Added "
             + i.evidence.getLast().id()
             + ". Reanalysis required; earlier proposals and approvals invalidated.");
-    i.requestIds.add(requestId);
     i.revision++;
     i.updatedAt = now();
     store.save(i);
+    store.recordRequest(i, requestId, operation, payloadHash);
     return i;
+  }
+
+  private static String hash(Object... values) {
+    try {
+      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      for (Object value : values) {
+        byte[] bytes = String.valueOf(value).getBytes(StandardCharsets.UTF_8);
+        digest.update((byte) (bytes.length >>> 24));
+        digest.update((byte) (bytes.length >>> 16));
+        digest.update((byte) (bytes.length >>> 8));
+        digest.update((byte) bytes.length);
+        digest.update(bytes);
+      }
+      return HexFormat.of().formatHex(digest.digest());
+    } catch (java.security.NoSuchAlgorithmException impossible) {
+      throw new IllegalStateException(impossible);
+    }
   }
 
   @Transactional

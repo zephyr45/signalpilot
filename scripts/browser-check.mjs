@@ -105,6 +105,7 @@ try {
   click("#resolve-btn");
   click("#modal-submit");
   check('incident.status==="RESOLVED"', "Incident resolves through the UI");
+  js('document.querySelector("#toast").hidden=true');
   run("screenshot", "--full", resolve("artifacts/04-recovery.png"));
   click('[data-tab="communications"]');
   click("#draft-btn");

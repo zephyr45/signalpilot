@@ -39,6 +39,8 @@ button {
   border: 0;
   color: inherit;
   background: none;
+  min-width: 44px;
+  min-height: 44px;
 }
 button:disabled {
   opacity: 0.45;
@@ -58,6 +60,8 @@ textarea:focus-visible {
 a {
   color: inherit;
   text-decoration: none;
+  min-width: 44px;
+  min-height: 44px;
 }
 [hidden] {
   display: none !important;
@@ -364,11 +368,13 @@ h3 {
   letter-spacing: 1px;
   display: flex;
   justify-content: space-between;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 .metric-card em {
-  font-size: 7px;
+  font-size: 12px;
   font-style: normal;
-  color: #6d7f8f;
+  color: var(--muted);
   letter-spacing: 0.4px;
 }
 .metric-card strong {
@@ -394,6 +400,12 @@ h3 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 280px;
   gap: 22px;
+}
+.primary-column,
+.secondary-column,
+.tab-content,
+.panel {
+  min-width: 0;
 }
 .panel {
   background: var(--panel);
@@ -492,6 +504,7 @@ h3 {
   font-size: 11px;
   border-bottom: 2px solid transparent;
   white-space: nowrap;
+  min-height: 44px;
 }
 .tabs button[aria-selected="true"] {
   color: var(--accent);
@@ -570,6 +583,8 @@ h3 {
   border: 1px solid #435562;
   padding: 2px 7px;
   border-radius: 4px;
+  min-height: 44px;
+  min-width: 44px;
 }
 .placeholder {
   padding: 24px;
@@ -732,7 +747,7 @@ h3 {
   background: #2d3b48;
   border-radius: 5px;
   font-size: 11px;
-  padding: 3px 8px;
+  padding: 10px 12px;
 }
 .command-console small {
   font-size: 8px;
@@ -793,6 +808,7 @@ textarea {
   color: var(--text);
   padding: 11px;
   width: 100%;
+  min-height: 44px;
 }
 select {
   margin-bottom: 12px;
@@ -938,6 +954,57 @@ dialog::backdrop {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+/* Secondary copy stays readable without changing the established visual hierarchy. */
+.brand small,
+.workspace small,
+.operator small,
+.nav-label,
+.rail-list-label,
+.count,
+.sandbox-label,
+.rail-bottom p,
+.operator,
+.topbar,
+.top-status,
+.eyebrow,
+.live-label,
+.incident-meta,
+.primary,
+.secondary,
+.text-button,
+.metric-card > span,
+.metric-card small,
+.subtle,
+.legend,
+.service-node,
+.service-node small,
+.chart-labels,
+.tabs button,
+.tabs span,
+.section-title p,
+.finding p,
+.finding .label,
+.pill,
+.ref,
+.action-item p,
+.action-state,
+.brief-panel p,
+.brief-panel small,
+.timeline-sub,
+#timeline time,
+#timeline strong,
+#timeline p,
+.runbook > span,
+.runbook p,
+.runbook > div,
+.command-console small,
+footer,
+.evidence-card small,
+.empty-features,
+.empty-note {
+  font-size: 12px;
 }
 .good {
   color: var(--green);
@@ -1103,6 +1170,7 @@ dialog::backdrop {
   }
   .section-title {
     align-items: flex-start;
+    flex-wrap: wrap;
   }
   .section-title h2 {
     font-size: 13px;

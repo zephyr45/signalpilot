@@ -4,9 +4,19 @@ services:
     ports:
       - "127.0.0.1:8091:8091"
     environment:
-      SIGNALPILOT_TOKEN: ${SIGNALPILOT_TOKEN:?Set a random access token before starting the container}
+      SIGNALPILOT_OPERATOR_TOKEN: ${SIGNALPILOT_OPERATOR_TOKEN:?Set a random operator token before starting the container}
+      SIGNALPILOT_MCP_TOKEN: ${SIGNALPILOT_MCP_TOKEN:?Set a different random MCP token before starting the container}
       SIGNALPILOT_ORIGIN: http://127.0.0.1:8091
       AI_PROVIDER: local
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    mem_limit: 512m
+    cpus: 1.0
     volumes:
       - signalpilot-data:/app/data
 volumes:

@@ -4,8 +4,8 @@ import assert from "node:assert/strict";
 import { writeFile } from "node:fs/promises";
 
 const base = process.env.SIGNALPILOT_URL || "http://127.0.0.1:8091";
-const headers = process.env.SIGNALPILOT_TOKEN
-  ? { Authorization: `Bearer ${process.env.SIGNALPILOT_TOKEN}` }
+const headers = process.env.SIGNALPILOT_MCP_TOKEN
+  ? { Authorization: `Bearer ${process.env.SIGNALPILOT_MCP_TOKEN}` }
   : {};
 const client = new Client({
   name: "signalpilot-independent-sdk-check",

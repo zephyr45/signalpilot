@@ -143,24 +143,49 @@
               </section>
               <div class="tabs" role="tablist" aria-label="Incident details">
                 <button
+                  id="tab-button-investigation"
                   role="tab"
                   aria-selected="true"
+                  aria-controls="tab-investigation"
+                  tabindex="0"
                   data-tab="investigation"
                 >
                   Investigation</button
-                ><button role="tab" aria-selected="false" data-tab="evidence">
-                  Evidence <span id="evidence-tab-count"></span></button
                 ><button
+                  id="tab-button-evidence"
                   role="tab"
                   aria-selected="false"
+                  aria-controls="tab-evidence"
+                  tabindex="-1"
+                  data-tab="evidence"
+                >
+                  Evidence <span id="evidence-tab-count"></span></button
+                ><button
+                  id="tab-button-communications"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="tab-communications"
+                  tabindex="-1"
                   data-tab="communications"
                 >
                   Communications</button
-                ><button role="tab" aria-selected="false" data-tab="postmortem">
+                ><button
+                  id="tab-button-postmortem"
+                  role="tab"
+                  aria-selected="false"
+                  aria-controls="tab-postmortem"
+                  tabindex="-1"
+                  data-tab="postmortem"
+                >
                   Postmortem
                 </button>
               </div>
-              <section id="tab-investigation" class="tab-content">
+              <section
+                id="tab-investigation"
+                class="tab-content"
+                role="tabpanel"
+                aria-labelledby="tab-button-investigation"
+              >
                 <div class="section-title">
                   <div>
                     <h2>Make the next move count.</h2>
@@ -194,7 +219,13 @@
                   >
                 </div>
               </section>
-              <section id="tab-evidence" class="tab-content" hidden>
+              <section
+                id="tab-evidence"
+                class="tab-content"
+                role="tabpanel"
+                aria-labelledby="tab-button-evidence"
+                hidden
+              >
                 <div class="section-title">
                   <div>
                     <h2>The evidence, in context.</h2>
@@ -206,7 +237,13 @@
                 </div>
                 <div id="evidence-cards"></div>
               </section>
-              <section id="tab-communications" class="tab-content" hidden>
+              <section
+                id="tab-communications"
+                class="tab-content"
+                role="tabpanel"
+                aria-labelledby="tab-button-communications"
+                hidden
+              >
                 <div class="section-title">
                   <div>
                     <h2>Keep everyone informed.</h2>
@@ -230,7 +267,13 @@
                   </button>
                 </div>
               </section>
-              <section id="tab-postmortem" class="tab-content" hidden>
+              <section
+                id="tab-postmortem"
+                class="tab-content"
+                role="tabpanel"
+                aria-labelledby="tab-button-postmortem"
+                hidden
+              >
                 <div class="section-title">
                   <div>
                     <h2>Leave the next team wiser.</h2>

@@ -18,8 +18,10 @@ Open http://127.0.0.1:8091. No account or model key is needed. The app stores lo
 
 - Evidence-linked investigation, reviewed simulated mitigation, recovery checks, stakeholder drafts and Markdown postmortems.
 - Nine real Streamable HTTP MCP tools; verified protocol 2025-11-25. Dashboard includes a live handshake/discovery/tool-call diagnostic.
-- Transactional persistence, stale-write protection, request deduplication and approval invalidation.
-- 11 passing Java integration tests and 18 passing browser assertions, plus an independent TypeScript MCP client check.
+- Flyway-managed H2/PostgreSQL persistence, stale-write protection, replay-safe idempotency and approval invalidation.
+- Separate operator/MCP credentials, bounded request bodies, origin enforcement, rate/concurrency limits and validated Bedrock output.
+- 18 passing Java tests, browser and accessibility automation, plus an independent TypeScript MCP client check.
+- CycloneDX SBOM, dependency/container scanning, checksums and runtime commit/artifact identity in CI.
 - Submission draft, product feedback/friction log and verification evidence.
 
 ## Honest limits

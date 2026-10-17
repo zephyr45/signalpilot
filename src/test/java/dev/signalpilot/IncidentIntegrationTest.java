@@ -18,7 +18,8 @@ import tools.jackson.databind.json.JsonMapper;
     properties = {
       "spring.datasource.url=jdbc:h2:mem:test;DB_CLOSE_DELAY=-1",
       "signalpilot.ai-provider=local",
-      "signalpilot.token="
+      "signalpilot.operator-token=",
+      "signalpilot.mcp-token="
     })
 class IncidentIntegrationTest {
   @Autowired IncidentService service;
@@ -108,9 +109,27 @@ class IncidentIntegrationTest {
     var second = service.command(i.id, "note", "Decision", i.revision, key, "Tester");
     assertThat(second.revision).isEqualTo(first.revision);
     assertThat(second.timeline).hasSize(first.timeline.size());
+    var advanced = cmd(first, "note", "A later decision");
+    var replay = service.command(i.id, "note", "Decision", i.revision, key, "Tester");
+    assertThat(replay.revision).isEqualTo(first.revision);
+    assertThat(replay.timeline).hasSize(first.timeline.size());
+    assertThatThrownBy(
+            () -> service.command(i.id, "note", "Different input", advanced.revision, key, "Tester"))
+        .isInstanceOf(ResponseStatusException.class)
+        .hasMessageContaining("different request");
     assertThatThrownBy(() -> cmd(second, "execute", "missing"))
         .isInstanceOf(ResponseStatusException.class);
-    assertThat(service.get(i.id).revision).isEqualTo(first.revision);
+    assertThat(service.get(i.id).revision).isEqualTo(advanced.revision);
+  }
+
+  @Test
+  void incidentListingIsBoundedAndPageable() {
+    for (int n = 0; n < 6; n++) fresh("unknown");
+    assertThat(service.list(3, 0)).hasSize(3);
+    assertThat(service.list(3, 3)).hasSize(3);
+    assertThatThrownBy(() -> service.list(101, 0))
+        .isInstanceOf(ResponseStatusException.class)
+        .hasMessageContaining("between 1 and 100");
   }
 
   @Test

@@ -10,11 +10,11 @@ A judge can run the app with Java 21, create a scenario, see cited evidence, app
 
 - Spring Boot 4.0.8 / Java 21; Spring AI 2.0.1 implements MCP transport and schemas.
 - Vanilla HTML/CSS/JavaScript served by Spring Boot; no frontend bundler or runtime CDN.
-- H2 file-backed database stores incident aggregates as JSON. Spring JDBC transactions and row locks serialize writes. Revision preconditions reject stale decisions. Per-incident request IDs deduplicate retries.
+- Flyway owns a portable H2/PostgreSQL schema. Core incident state remains a compact JSON document; evidence, timeline events, recovery metrics and idempotency responses use indexed tables with foreign keys. Spring JDBC transactions and row locks serialize writes. Revision preconditions reject stale decisions. Idempotency keys bind to operation, payload, revision and actor and replay the original response; reuse for another request is rejected.
 - Evidence evaluator has explicit rules and conservative abstention. Strength labels are qualitative rule matches, not calibrated model confidence. Sources remain caller-supplied and are not independently authenticated.
-- Optional Bedrock Converse generates a textual briefing. It cannot mutate incidents or approve actions. No silent fallback is used for cloud errors. Without it, briefs are labeled local templates; MCP clients bring their own model.
-- API and MCP share a token gate when configured. Default binding is loopback. Cross-origin requests are rejected; public deployment needs HTTPS, a unique token and its configured origin. The token is a single-workspace demo control, not enterprise user authorization.
-- Audit timeline is persisted with the aggregate. It is not event sourcing, tamper-proof storage, or a distributed event bus.
+- Optional Bedrock Converse requests structured claims with evidence IDs, uncertainty and a next step. Evidence is delimited as untrusted data; malformed, uncited and secret-like output is rejected before persistence. The adapter cannot mutate incidents or approve actions. No silent fallback is used for cloud errors. Without it, briefs are labeled local templates; MCP clients bring their own model.
+- API and MCP use different scoped credentials. Default binding is loopback, and remote access is rejected when the relevant credential is absent. Same-origin requests are derived from the effective request port; explicitly configured origins support a trusted reverse proxy. The filter enforces 128 KiB bodies plus process-local rate and concurrency limits. These are single-workspace controls, not enterprise user authorization.
+- Evidence, metrics and the audit timeline are append-only within an incident and capped at 500 entries each. Incident lists are paginated to at most 100 results. The audit store is not event sourcing, tamper-proof storage, or a distributed event bus.
 
 ## Lifecycle
 
